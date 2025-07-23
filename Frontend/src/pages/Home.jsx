@@ -1,10 +1,12 @@
+import React, { lazy, Suspense } from 'react'
 import Navbar from '../Components/Navbar'
 import HeroSection from '../Components/HeroSection'
 import Explore from '../Components/Explore'
-import Footer from '../Components/Footer'
-import Testinomials from '../Components/Testinomials'
-import MoreCategories from '../Components/moreCategories'
-import WhyShopUs from '../Components/WhyshopUs'
+
+const MoreCategories = lazy(() => import('../Components/moreCategories'))
+const Testinomials = lazy(() => import('../Components/Testinomials'))
+const WhyShopUs = lazy(() => import('../Components/WhyshopUs'))
+const Footer = lazy(() => import('../Components/Footer'))
 
 function Home() {
   return (
@@ -19,12 +21,14 @@ function Home() {
           <Explore />
         </section>
 
-        <section>
-          <MoreCategories/>
-          <Testinomials />
-          <WhyShopUs />
-          <Footer />
-        </section>
+        <Suspense fallback={<div className="text-center py-10">Loading...</div>}>
+          <section>
+            <MoreCategories />
+            <Testinomials />
+            <WhyShopUs />
+            <Footer />
+          </section>
+        </Suspense>
       </div>
     </>
   )

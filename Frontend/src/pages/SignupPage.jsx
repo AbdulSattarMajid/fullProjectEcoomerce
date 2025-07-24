@@ -9,12 +9,19 @@ const SignupPage = ({ setToken, setUser }) => {
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [role, setRole] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const backendUrl = (import.meta.env.VITE_BACKEND_URL || "").replace(/\/$/, "");
 
     const handleSignup = async (e) => {
         e.preventDefault();
+
+        if (!role) {
+            toast.error("Please select a role");
+            return;
+        }
+
         if (password !== confirmPassword) {
             toast.error("Passwords do not match!");
             return;
@@ -26,6 +33,7 @@ const SignupPage = ({ setToken, setUser }) => {
                 name,
                 email,
                 password,
+                role,
             });
 
             if (data.success) {
@@ -44,6 +52,7 @@ const SignupPage = ({ setToken, setUser }) => {
         }
     };
 
+
     return (
         <AuthForm
             mode="Signup"
@@ -53,12 +62,16 @@ const SignupPage = ({ setToken, setUser }) => {
             setEmail={setEmail}
             setPassword={setPassword}
             setConfirmPassword={setConfirmPassword}
+            setRole={setRole}
             name={name}
             email={email}
             password={password}
+            confirmPassword={confirmPassword}
+            role={role}
             alternateLinkText="Already have an account?"
             alternateLinkAction={() => navigate("/login")}
         />
+
     );
 };
 

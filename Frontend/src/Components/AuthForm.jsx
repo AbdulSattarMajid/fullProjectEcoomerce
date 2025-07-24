@@ -11,6 +11,8 @@ const AuthForm = ({
   setPassword,
   setConfirmPassword,
   confirmPassword,
+  role,
+  setRole,
   name,
   email,
   password,
@@ -81,6 +83,27 @@ const AuthForm = ({
               />
             </div>
           )}
+          {mode === "Signup" && (
+            <div className="mt-4">
+              <label className="block text-sm font-medium mb-2">Signup as:</label>
+              <div className="flex gap-4">
+                {["Customer", "Seller", "Courier"].map((r) => (
+                  <label key={r} className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="role"
+                      value={r}
+                      checked={role === r}
+                      onChange={(e) => setRole(e.target.value)}
+                      required
+                    />
+                    <span>{r}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
 
 
           {mode === "Login" && (

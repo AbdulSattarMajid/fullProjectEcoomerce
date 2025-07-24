@@ -1,4 +1,4 @@
-import express from "express";
+
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -7,8 +7,13 @@ import connectDB from "./config/connectDB.js";
 import userRoute from "./Routes/userRoute.js";
 dotenv.config();
 
-const app = express();
 
+const express = require("express");
+const app = express();
+app.get((req, res) => {
+  res.send("Hello World");
+});
+app.listen(3000);
 app.use(
   cors({
     credentials: true,
@@ -21,16 +26,17 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to the E-commerce API" + PORT });
 });
-app.use("/api/user" ,userRoute);
+app.use("/api/user", userRoute);
 
 const PORT = process.env.PORT || 5000;
 
-connectDB() .then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Failed to connect to the database:", error);
+    process.exit(1); // Exit the process with failure
   });
-}).catch((error) => {
-  console.error("Failed to connect to the database:", error);
-  process.exit(1); // Exit the process with failure
-});
-

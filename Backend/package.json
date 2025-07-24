@@ -12,6 +12,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+<<<<<<< HEAD
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -25,4 +26,8 @@
     "resend": "^4.7.0"
   },
   "keywords": []
+=======
+    "express": "^5.1.0"
+  }
+>>>>>>> e6316db36ab754d80d301e62ae382683cb92072b
 }

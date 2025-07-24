@@ -12,7 +12,7 @@ const SignupPage = ({ setToken, setUser }) => {
     const [role, setRole] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
-    const backendUrl = (import.meta.env.VITE_BACKEND_URL || "").replace(/\/$/, "");
+    const backendUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 
     const handleSignup = async (e) => {
         e.preventDefault();
@@ -40,6 +40,7 @@ const SignupPage = ({ setToken, setUser }) => {
                 setToken(data.token);
                 setUser(data.user);
                 localStorage.setItem("token", data.token);
+                localStorage.setItem("user", JSON.stringify(data.user));
                 toast.success("Account created successfully!");
                 navigate("/");
             } else {

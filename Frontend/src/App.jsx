@@ -8,14 +8,28 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
-  const [token, setToken] = useState("");
-  const [user, setUser] = useState(null);
+const [user, setUser] = useState(() => {
+  const storedUser = localStorage.getItem("user");
+  try {
+    return storedUser ? JSON.parse(storedUser) : null;
+  } catch (error) {
+    console.error("Failed to parse user from localStorage:", error);
+    return null;
+  }
+});
+
+
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem("token") || "";
+  });
+  
+
 
   return (
     <BrowserRouter>
       <ToastContainer />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home user={user} setUser={setUser} />} />
         <Route path="/cart" element={<Cart />} />
         <Route
           path="/login"

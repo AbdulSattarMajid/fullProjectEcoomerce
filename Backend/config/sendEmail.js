@@ -13,7 +13,7 @@ const sendEmail = async ({ sendTo, subject, html }) => {
   try {
     const { data, error } = await resend.emails.send({
       from: "REsend <noreply@amitprajapati.co.in>",
-      to: "salahudinabbasi733@gmail.com",
+      to: sendTo, // ✅ dynamic instead of hardcoded
       subject: subject,
       html: html,
     });

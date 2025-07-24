@@ -1,10 +1,9 @@
-import { useEffect, useState, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { ShoppingCart } from 'lucide-react'
 import ProfileDropdown from './ProfileDropdown'
 
-const Navbar = () => {
-  const [user, setUser] = useState(null)
+const Navbar = ({ user, setUser }) => {
   const [count, setCount] = useState(4)
   const [showDropdown, setShowDropdown] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
@@ -12,13 +11,9 @@ const Navbar = () => {
   const dropdownRef = useRef(null)
   const profileRef = useRef(null)
   const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    }
-
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setShowDropdown(false)
@@ -36,11 +31,10 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('user')
+    localStorage.removeItem('token')
     setUser(null)
     navigate('/login')
   }
-
-  const token = user?.email
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-white/60 backdrop-blur-lg shadow-sm text-gray-800 transition-all duration-300">
@@ -52,7 +46,6 @@ const Navbar = () => {
             eShop
           </Link>
 
-          {/* Categories Dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setShowDropdown(prev => !prev)}
@@ -79,7 +72,7 @@ const Navbar = () => {
           <Link to="/contact" className="text-sm hover:text-blue-600 font-medium transition">Contact</Link>
         </div>
 
-        {/* Center: Search */}
+        {/* Center Search */}
         <div className="hidden md:flex flex-grow max-w-md mx-6">
           <input
             type="text"
@@ -93,9 +86,7 @@ const Navbar = () => {
 
         {/* Right Section */}
         <div className="flex items-center gap-4 relative">
-
-          {/* Auth Buttons / Profile */}
-          {!token ? (
+          {!user ? (
             <>
               <button onClick={() => navigate("/login")} className="text-gray-700 text-sm hover:text-blue-600 transition">Login</button>
               <button
@@ -107,16 +98,14 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/notifications" className="text-sm hover:text-blue-600 font-medium">
-                🔔
-              </Link>
+              <Link to="/notifications" className="text-sm hover:text-blue-600 font-medium">🔔</Link>
               <div className="relative" ref={profileRef}>
-<div
-  onClick={() => setShowProfile(prev => !prev)}
-  className="w-10 h-10 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center cursor-pointer border-2 border-blue-500 hover:scale-105 transition"
->
-  {user?.name?.charAt(0).toUpperCase()}
-</div>
+                <div
+                  onClick={() => setShowProfile(prev => !prev)}
+                  className="w-10 h-10 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center cursor-pointer border-2 border-blue-500 hover:scale-105 transition"
+                >
+                  {user?.name?.charAt(0).toUpperCase()}
+                </div>
 
                 {showProfile && (
                   <ProfileDropdown
@@ -127,10 +116,8 @@ const Navbar = () => {
                 )}
               </div>
             </>
-
           )}
 
-          {/* Cart Icon */}
           <Link to="/cart" className="relative group">
             <ShoppingCart className="w-6 h-6 text-gray-800 group-hover:text-blue-600 transition" />
             <span className="absolute -top-2 -right-2 text-xs bg-red-600 text-white rounded-full px-1.5 font-semibold shadow-sm">

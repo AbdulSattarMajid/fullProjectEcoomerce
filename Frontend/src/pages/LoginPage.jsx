@@ -9,7 +9,7 @@ const LoginPage = ({ setToken, setUser }) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const backendUrl = (import.meta.env.VITE_BACKEND_URL || "").replace(/\/$/, "");
+  const backendUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -25,7 +25,7 @@ const LoginPage = ({ setToken, setUser }) => {
         setUser(data.user);
         localStorage.setItem("token", data.token);
         toast.success("Logged in successfully!");
-        navigate("/"); // go to homepage or dashboard
+        navigate("/"); 
       } else {
         toast.error(data.message);
       }

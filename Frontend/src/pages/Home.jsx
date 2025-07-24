@@ -8,10 +8,10 @@ const Testinomials = lazy(() => import('../Components/Testinomials'))
 const WhyShopUs = lazy(() => import('../Components/WhyshopUs'))
 const Footer = lazy(() => import('../Components/Footer'))
 
-function Home() {
+function Home({ user }) {
   return (
     <>
-      <Navbar />
+      <Navbar user={user} />
       <div className="overflow-x-hidden">
         <section className="h-screen">
           <HeroSection />
@@ -33,5 +33,6 @@ function Home() {
     </>
   )
 }
+
 
 export default Home

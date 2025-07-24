@@ -8,21 +8,20 @@ import generateRefreshtoken from "../utils/generateRefreshtoken.js";
 
 export async function registerUserController(request, response) {
   try {
-    const { name, email, password } = request.body;
+    const { name, email, password, role } = request.body; // ✅ added role
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !role) {
       return response.status(400).json({
-        message: "provide email, name, password",
+        message: "Provide name, email, password, and role",
         error: true,
         success: false,
       });
     }
 
-    const user = await userModel.findOne({ email }); // ✅ correct
-
-    if (user) {
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
       return response.json({
-        message: "Already register email",
+        message: "Email already registered",
         error: true,
         success: false,
       });
@@ -31,32 +30,48 @@ export async function registerUserController(request, response) {
     const salt = await bcryptjs.genSalt(10);
     const hashPassword = await bcryptjs.hash(password, salt);
 
-    const payload = {
+    const newUser = new UserModel({
       name,
       email,
       password: hashPassword,
-    };
+      role, // ✅ Save role
+    });
 
-    const newUser = new UserModel(payload);
     const save = await newUser.save();
 
-    const VerifyEmailUrl = `${process.env.FRONTEND_URL}/verify-email?code=${save?._id}`;
+    const VerifyEmailUrl = `${process.env.FRONTEND_URL}/verify-email?code=${save._id}`;
 
-    const verifyEmail = await sendEmail({
+    await sendEmail({
       sendTo: email,
-      subject: "Verify email from binkeyit",
+      subject: "Verify your email from Binkeyit",
       html: verifyEmailTemplate({
         name,
         url: VerifyEmailUrl,
       }),
     });
 
-    return response.json({
-      message: "User register successfully",
-      error: false,
-      success: true,
-      data: save,
-    });
+const accesstoken = await generateAccesstoken(save._id);
+const refreshtoken = await generateRefreshtoken(save._id);
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "None",
+};
+
+response.cookie("accesstoken", accesstoken, cookieOptions);
+response.cookie("refreshtoken", refreshtoken, cookieOptions);
+
+const { password: _, ...userWithoutPassword } = save._doc;
+
+return response.status(201).json({
+  message: "User registered successfully",
+  error: false,
+  success: true,
+  token: accesstoken,
+  user: userWithoutPassword,
+});
+
   } catch (error) {
     return response.status(500).json({
       message: error.message || error,
@@ -65,6 +80,7 @@ export async function registerUserController(request, response) {
     });
   }
 }
+
 
 export async function verifyEmailController(request, response) {
   try {
@@ -105,8 +121,7 @@ export async function loginUserController(request, response) {
   try {
     const { email, password } = request.body;
 
-    const user = await userModel.findOne({ email });
-
+    const user = await UserModel.findOne({ email });
     if (!user) {
       return response.status(400).json({
         message: "Invalid email or password",
@@ -114,6 +129,7 @@ export async function loginUserController(request, response) {
         success: false,
       });
     }
+
     const isPasswordMatch = await bcryptjs.compare(password, user.password);
     if (!isPasswordMatch) {
       return response.status(400).json({
@@ -129,20 +145,20 @@ export async function loginUserController(request, response) {
     const cookieOptions = {
       httpOnly: true,
       secure: true,
-      samesite: "None", // Adjust based on your requirements
+      sameSite: "None",
     };
 
     response.cookie("accesstoken", accesstoken, cookieOptions);
     response.cookie("refreshtoken", refreshtoken, cookieOptions);
 
+    const { password: _, ...userWithoutPassword } = user._doc;
+
     return response.json({
       message: "Login successfully",
       error: false,
       success: true,
-      data: {
-        accesstoken,
-        refreshtoken,
-      },
+      token: accesstoken, // ✅ matches frontend expectation
+      user: userWithoutPassword,
     });
   } catch (error) {
     return response.status(500).json({
@@ -152,6 +168,7 @@ export async function loginUserController(request, response) {
     });
   }
 }
+
 
 export async function logoutController(request, response) {
   try {

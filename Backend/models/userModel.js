@@ -1,8 +1,6 @@
-import jwt from "jsonwebtoken";
-
 import mongoose from "mongoose";
-const { verify } = jwt;
-const userShema = new mongoose.Schema(
+
+const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -17,12 +15,18 @@ const userShema = new mongoose.Schema(
     verify_email: { type: Boolean, default: false },
     forgotPasswordToken: { type: String, default: "" },
     forgotPasswordExpiry: { type: Date, default: null },
-    role: { type: String, enum: ["User", "Admin"] }, // Added role field
+
+    // ✅ Updated role to match frontend
+    role: {
+      type: String,
+      enum: ["Customer", "Seller", "Courier", "Admin"],
+      default: "Customer",
+    },
   },
   {
     timestamps: true,
   }
 );
 
-const User = mongoose.model("User", userShema);
+const User = mongoose.model("User", userSchema);
 export default User;

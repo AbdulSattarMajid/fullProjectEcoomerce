@@ -1,4 +1,4 @@
-
+import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -7,17 +7,16 @@ import connectDB from "./config/connectDB.js";
 import userRoute from "./Routes/userRoute.js";
 dotenv.config();
 
-
-const express = require("express");
 const app = express();
 app.get((req, res) => {
   res.send("Hello World");
 });
-app.listen(3000);
+
+
 app.use(
   cors({
     credentials: true,
-    origin: process.env.FRONTEND_URL,
+    origin: "http://localhost:5173", // ✅ no slash
   })
 );
 app.use(express.json());
@@ -26,7 +25,7 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to the E-commerce API" + PORT });
 });
-app.use("/api/user", userRoute);
+app.use("/api/users", userRoute);
 
 const PORT = process.env.PORT || 5000;
 
